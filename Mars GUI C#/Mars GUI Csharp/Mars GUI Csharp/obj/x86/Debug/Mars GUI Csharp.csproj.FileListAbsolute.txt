@@ -1,0 +1,7 @@
+C:\Users\Default.Blackjack\Documents\GitHub\Basestation\Mars GUI C#\Mars GUI Csharp\Mars GUI Csharp\bin\Debug\Mars GUI Csharp.exe
+C:\Users\Default.Blackjack\Documents\GitHub\Basestation\Mars GUI C#\Mars GUI Csharp\Mars GUI Csharp\bin\Debug\Mars GUI Csharp.pdb
+C:\Users\Default.Blackjack\Documents\GitHub\Basestation\Mars GUI C#\Mars GUI Csharp\Mars GUI Csharp\obj\x86\Debug\Mars_GUI_Csharp.Properties.Resources.resources
+C:\Users\Default.Blackjack\Documents\GitHub\Basestation\Mars GUI C#\Mars GUI Csharp\Mars GUI Csharp\obj\x86\Debug\Mars GUI Csharp.csproj.GenerateResource.Cache
+C:\Users\Default.Blackjack\Documents\GitHub\Basestation\Mars GUI C#\Mars GUI Csharp\Mars GUI Csharp\obj\x86\Debug\Mars GUI Csharp.exe
+C:\Users\Default.Blackjack\Documents\GitHub\Basestation\Mars GUI C#\Mars GUI Csharp\Mars GUI Csharp\obj\x86\Debug\Mars GUI Csharp.pdb
+C:\Users\Default.Blackjack\Documents\GitHub\Basestation\Mars GUI C#\Mars GUI Csharp\Mars GUI Csharp\obj\x86\Debug\Mars_GUI_Csharp.Form1.resources
