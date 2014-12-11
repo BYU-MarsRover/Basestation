@@ -1,0 +1,8 @@
+C:\Users\Default.Blackjack\documents\visual studio 2010\Projects\Gui\Gui\obj\x86\Debug\Gui.csprojResolveAssemblyReference.cache
+C:\Users\Default.Blackjack\documents\visual studio 2010\Projects\Gui\Gui\obj\x86\Debug\WindowsFormsApplication1.Form1.resources
+C:\Users\Default.Blackjack\documents\visual studio 2010\Projects\Gui\Gui\obj\x86\Debug\WindowsFormsApplication1.Properties.Resources.resources
+C:\Users\Default.Blackjack\documents\visual studio 2010\Projects\Gui\Gui\obj\x86\Debug\Gui.csproj.GenerateResource.Cache
+C:\Users\Default.Blackjack\documents\visual studio 2010\Projects\Gui\Gui\bin\Debug\Gui.exe
+C:\Users\Default.Blackjack\documents\visual studio 2010\Projects\Gui\Gui\bin\Debug\Gui.pdb
+C:\Users\Default.Blackjack\documents\visual studio 2010\Projects\Gui\Gui\obj\x86\Debug\Gui.exe
+C:\Users\Default.Blackjack\documents\visual studio 2010\Projects\Gui\Gui\obj\x86\Debug\Gui.pdb
