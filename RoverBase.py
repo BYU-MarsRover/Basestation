@@ -11,24 +11,26 @@ from array import *
 # UDP_IP = '255.255.255.255' # Broadcast Sun Adapter
 # UDP_IP = '192.168.0.255' # Broadcast Local Network?
 # UDP_IP = '71.195.237.116' # Broadcast
-UDP_IP = '192.168.10.130' # Broadcast
+# UDP_IP = '192.168.10.131' # Broadcast
+# UDP_IP = '192.168.10.121' # Broadcast
 # UDP_IP = '192.168.1.149' # Broadcast
 # UDP_IP = '192.168.1.112' # Broadcast
+UDP_IP = '192.168.1.3' # Broadcast
 # UDP_PORT = 80
 UDP_PORT = 27015
 MESSAGE = "Rover Test Frame"
 
 
-FPS = 20
+FPS = 1
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # Broadcast
 # sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1) # Broadcast
 # sock.bind((UDP_IP, UDP_PORT)) # Broadcast
 
-print "UDP target IP:", UDP_IP
-print "UDP target port:", UDP_PORT
-sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
+# print "UDP target IP:", UDP_IP
+# print "UDP target port:", UDP_PORT
+# sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
 
 # --- Rover variables
 allowMouseIntegral = False
@@ -36,7 +38,7 @@ gimbal = [0,0]
 drive = [0,0]
 mainSeqCount = 0
 armSeqCount = 0
-
+blinkToggle = 0
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -190,18 +192,34 @@ while done==False:
 	mainSeqCount += 1
 	armSeqCount += 1
 	
+	blinkToggle = 0 if (blinkToggle) else 1
+	
 	DRIVE_LEN   = 5
 	ARM_LEN     = 5
 	
-	roverLinkFrame = [0x01,0xC8,(mainSeqCount&0xFF),DRIVE_LEN,(gimbal[0]>>8)&0xFF,gimbal[0]&0xFF,(gimbal[1]>>8)&0xFF,gimbal[1]&0xFF]
+	# roverLinkFrame = [0x01,0xC8,(mainSeqCount&0xFF),DRIVE_LEN,(gimbal[0]>>8)&0xFF,gimbal[0]&0xFF,(gimbal[1]>>8)&0xFF,gimbal[1]&0xFF]
 	#payload = struct.pack('B'*len(roverLinkFrame),*roverLinkFrame) # Gross way
 	#print payload
+	#roverLinkFrame = [0,1,2,3,4,5,6,7,8,9,8,7,6,5,4,3,2,1,0,9,8,7,6,5,4,3,2,1,0,9,8,7,6,5,4,3,2,1,0]
+	roverLinkFrame = [blinkToggle,mainSeqCount&0xFF]
+	# roverLinkFrame = [0,0,0,0,0,0,0,0,0,0,0]
+	# roverLinkFrame = [1,1,1,1,1,1,1,1]
+	
 	payload = array('B')
 	payload.fromlist(roverLinkFrame)
+	
+	#payload = "Hi Joseph"
+	
+	#payload = array('B')
+	# if((keystate[K_q])):
+		# payload.fromlist([0,0,0,0])
+	# else:
+	#payload.fromlist(payload)
 	
 	sock.sendto(payload, (UDP_IP, UDP_PORT))
 	# sock.sendto("Test", (UDP_IP, UDP_PORT))
 	
+	#done = True
 	
 	
 	# ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
