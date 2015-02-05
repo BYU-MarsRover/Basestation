@@ -21,7 +21,7 @@ UDP_PORT = 27015
 MESSAGE = "Rover Test Frame"
 
 
-FPS = 1
+FPS = 5
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # Broadcast
@@ -192,7 +192,8 @@ while done==False:
 	mainSeqCount += 1
 	armSeqCount += 1
 	
-	blinkToggle = 0 if (blinkToggle) else 1
+	# blinkToggle = 0 if (blinkToggle) else 1
+	blinkToggle = 1 if (keystate[K_q]) else 0
 	
 	DRIVE_LEN   = 5
 	ARM_LEN     = 5
