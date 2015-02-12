@@ -10,6 +10,8 @@ import socket
 import signal
 import sys
 import string
+import Tkinter
+import thread
 bound = 0
 
 def main():
@@ -30,8 +32,10 @@ def main():
             # Instantiating client object.
             rover_client = m_client(sys.argv[2], int(sys.argv[3]))
             bound = 1
+            cgui = m_gui(None)
+            cgui.title('Mars Rover Client')
             # Begin client operation loop.
-            rover_client.run_client()
+            rover_client.run_client(cgui)
     else:
         print "Please specify whether this is a server or client."
         print "Server Usage: \"mars_rover.py -S <IP> <PORT>\""
@@ -87,12 +91,28 @@ class m_client:
         except:
             sys.exit('Unable to create socket.')
 
-    def run_client(self):
+    def run_client(self, cgui):
         running = 1
         # Main sending loop.
         while running:
-            data = raw_input("Please give me a string to send: ")
-            self.m_socket.sendto(data, self.m_address)
+            data = raw_input('Please give me a string to send: ')
+            data = cgui.inputBox.get()
+            self.m_socket.sendto(str(data), self.m_address)
+
+class m_gui(Tkinter.Tk):
+    def __init__(self,parent):
+        Tkinter.Tk.__init__(self,parent)
+        self.parent = parent
+        self.initialize()
+
+    def initialize(self):
+        self.grid()
+        #self.quitButton = Tkinter.Button(self, text='Quit', command=self.quit)
+        self.inputName = Tkinter.Label(self, text='Enter a string to send:')
+        self.inputBox = Tkinter.Entry(self)
+        #self.quitButton.grid()
+        self.inputName.grid()
+        self.inputBox.grid()
 
 if __name__ == "__main__":
     main()
