@@ -8,6 +8,7 @@ package mars;
 
 import java.net.*;
 import java.util.*;
+import java.io.*;
 
 public class Client{
 
@@ -28,7 +29,7 @@ public class Client{
             socket = new DatagramSocket() ;
 
             // Create input Scanner.
-            input = new Scanner(System.in);
+            input = new Scanner(new File("/home/joseph/xbox_to_java"));
         }
         catch (Exception e){
             System.out.println(e);
@@ -39,9 +40,15 @@ public class Client{
         try{
             while(true){
                 // Construct the datagram packet
-                System.out.println("Please give me a string to send:");
-                String tempData = input.nextLine();
-                System.out.println("Sending: " + tempData);
+                String tempData = "";
+                input = new Scanner(new File("/home/joseph/xbox_to_java"));
+                while (tempData.equals("")){
+                    if (input.hasNextLine()){
+                        tempData = input.nextLine();
+                        input.close();
+                    }
+                }
+                //System.out.println("Sending: " + tempData);
                 byte [] data = tempData.getBytes() ;
                 packet = new DatagramPacket(data,data.length,host,port);
 
@@ -58,7 +65,7 @@ public class Client{
                 socket.receive(packet);
 
                 // Print the response
-                System.out.println("Received: " + new String(packet.getData()));
+                //System.out.println("Received: " + new String(packet.getData()));
             }
         }
         catch( Exception e ){

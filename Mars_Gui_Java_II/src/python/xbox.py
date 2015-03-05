@@ -4,6 +4,8 @@
 import sys, os, pygame, serial
 from contextlib import contextmanager
 xbox = 0
+send_file_path = '/home/joseph/xbox_to_java'
+send_file = 0
 a = [ 0, 'a', 0 ]
 b = [ 1, 'b', 0 ]
 y = [ 3, 'y', 0 ]
@@ -30,6 +32,7 @@ buttons = [ a, b, x, y, lb, rb, back, start, bxb, ljp, rjp, hl, hr, hu, hd,
 
 def main():
     controller_init()
+    send_file_init()
     control()
 
 def controller_init():
@@ -42,12 +45,26 @@ def controller_init():
     if not xbox.get_name() == "Microsoft X-Box 360 pad":
         sys.exit("Error, wrong gamepad: " + xbox.get_name())
     else:
-        print "Initialization complete!"
+        print "Controller initialization complete!"
+
+def send_file_init():
+    # Initialize a pipe object.
+    global send_file_path, send_file
+    os.remove(send_file_path)
+    if not os.path.exists(send_file_path):
+        os.mkfifo(send_file_path)
+    print "Pipe initialization complete!"
+
+def send(data):
+    global send_file
+    send_file = open(send_file_path, 'w')
+    send_file.write(str(data) + '\n')
+    send_file.close()
 
 def control():
     #Main control loop.
-    global xbox, a, b, x, y, lb, rb, back, start, bxb, ljp 
-    global rjp, hl, hr, hu, hd, lt, rt, lx, ly, rx, ry 
+    global xbox, send_file_path, send_file, a, b, x, y, lb, rb, back, start
+    global bxb, ljp, rjp, hl, hr, hu, hd, lt, rt, lx, ly, rx, ry 
     done=False
     while done==False:
         for event in pygame.event.get():
@@ -56,36 +73,47 @@ def control():
                 if event.button == 0:
                     a[2] = 1
                     print "a pressed"
+                    send('a')
                 elif event.button == 1:
                     b[2] = 1
                     print "b pressed"
+                    send('b')
                 elif event.button == 2:
                     x[2] = 1
                     print "x pressed"
+                    send('x')
                 elif event.button == 3:
                     y[2] = 1
                     print "y pressed"
+                    send('y')
                 elif event.button == 4:
                     lb[2] = 1
                     print "left bumper pressed"
+                    send('left bumper')
                 elif event.button == 5:
                     rb[2] = 1
                     print "right bumper pressed"
+                    send('right bumper')
                 elif event.button == 6:
                     back[2] = 1
                     print "back pressed"
+                    send('back')
                 elif event.button == 7:
                     start[2] = 1
                     print "start pressed"
+                    send('start')
                 elif event.button == 8:
                     bxb[2] = 1
-                    print "big X button pressed"
+                    print "big x button pressed"
+                    send('big x button')
                 elif event.button == 9:
                     ljp[2] = 1
                     print "left joystick push button pressed"
+                    send('left joystick push button')
                 elif event.button == 10:
                     rjp[2] = 1
                     print "right joystick push button pressed"
+                    send('right joystick push button')
             # Button release handling.
             if event.type == pygame.JOYBUTTONUP:
                 if event.button == 0:
