@@ -1,2 +1,2 @@
 #!/bin/bash
-javac -sourcepath src/mars/ -d bin/ src/mars/*.java
+javac -cp lib/jinput-linux.jar:lib/lwjgl.jar -Xlint:unchecked -sourcepath src/mars/ -d bin/ src/mars/*.java
