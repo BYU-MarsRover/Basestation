@@ -10,9 +10,17 @@ import socket
 import signal
 import sys
 import string
+import Tkinter
+import thread
+import threading
+import pygame
+import pygame.camera
+import time
 bound = 0
+uv0t = 0
 
 def main():
+    global uv0t
     # Registering interrupt handler.
     signal.signal(signal.SIGINT, signal_handler)
     # Initializing server object.
@@ -26,12 +34,21 @@ def main():
             # Begin server operation loop.
             dedicated_server.run_server()
         if (sys.argv[1] == "-C"):
+            bound = 1
             print "Starting mars rover client..."
             # Instantiating client object.
             rover_client = m_client(sys.argv[2], int(sys.argv[3]))
-            bound = 1
+            pygame.init()
+            pygame.camera.init()
+            cam = pygame.camera.Camera("/dev/video0",(640,480))
+            cam.start()
+            cgui = m_gui(None)
+            cgui.title('Mars Rover Client')
+            screen = pygame.display.set_mode((640,480), 0, 24)
             # Begin client operation loop.
-            rover_client.run_client()
+            uv0t = threading.Thread(target=update_video_0, args=[cam, screen])
+            uv0t.start()
+            rover_client.run_client(cgui)
     else:
         print "Please specify whether this is a server or client."
         print "Server Usage: \"mars_rover.py -S <IP> <PORT>\""
@@ -49,6 +66,7 @@ def signal_handler(signal, frame):
         print "\n\rClosing down client..."
         if bound:
             rover_client.m_socket.close()
+        uv0t.join()
         sys.exit(1)
 
 class m_server:
@@ -87,12 +105,36 @@ class m_client:
         except:
             sys.exit('Unable to create socket.')
 
-    def run_client(self):
+    def run_client(self, cgui):
         running = 1
         # Main sending loop.
         while running:
-            data = raw_input("Please give me a string to send: ")
-            self.m_socket.sendto(data, self.m_address)
+            data = raw_input('Please give me a string to send: ')
+            data = cgui.inputBox.get()
+            self.m_socket.sendto(str(data), self.m_address)
+
+class m_gui(Tkinter.Tk):
+    def __init__(self,parent):
+        Tkinter.Tk.__init__(self,parent)
+        self.parent = parent
+        self.initialize()
+
+    def initialize(self):
+        self.grid()
+        self.quitButton = Tkinter.Button(self, text='Quit', command=self.quit)
+        self.inputName = Tkinter.Label(self, text='Enter a string to send:')
+        self.inputBox = Tkinter.Entry(self)
+        self.frame = Tkinter.Frame(width=768, height=576, bg="", colormap="new")
+        self.frame.grid(row=0, column=0)
+        self.quitButton.grid(row=1, column=0)
+        self.inputName.grid(row=0, column=1)
+        self.inputBox.grid(row=1, column=1)
+       
+def update_video_0(cam, screen):
+    while(True):
+        image = cam.get_image()
+        screen.blit(image, (0,0))
+        pygame.display.update()
 
 if __name__ == "__main__":
     main()
