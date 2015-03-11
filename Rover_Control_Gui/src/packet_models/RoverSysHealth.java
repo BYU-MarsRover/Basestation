@@ -52,6 +52,7 @@ public class RoverSysHealth {
 		result.append(ethernetErrors);
 		result.append("\nSome Other Metric: ");
 		result.append(someOtherMetric);
+		result.append("\n");
 		return result.toString();
 	}
 	

@@ -1,30 +1,21 @@
 package gui_base.formats;
 
+import java.awt.Component;
+
 import javax.swing.JSplitPane;
 
 import gui_base.RoverBaseWindow;
-import gui_base.displays.RoverImageDisplay;
-import gui_base.displays.RoverVideoDisplay;
 
 @SuppressWarnings("serial")
-public class RoverSplitWindow extends JSplitPane {
+public class RoverSplitWindow<RoverTypeA, RoverTypeB> extends JSplitPane {
 
 	private RoverBaseWindow Root;
-	private RoverImageDisplay LeftView;
-	private RoverVideoDisplay RightView;
+	private RoverTypeA ComponentA;
+	private RoverTypeB ComponentB;
 	
+	// Constructors
 	public RoverSplitWindow(RoverBaseWindow baseWindow) {
-		Root = baseWindow;
-		
-		//this.setOrientation(HORIZONTAL_SPLIT);
-//		this.setDividerLocation(Root.getWindowWidth() * 3 / 4);
-		
-		LeftView = new RoverImageDisplay(Root);
-		RightView = new RoverVideoDisplay(Root);
-		
-//		this.setTopComponent(LeftView);
-//		this.setBottomComponent(RightView);
-		
+		Root = baseWindow;		
 	}
 
 	// Auxiliary ________________________________________________________________________________
@@ -44,7 +35,15 @@ public class RoverSplitWindow extends JSplitPane {
 		}
 	}
 	
-	// Getters and Setters ________________________________________________________________________________
+	public void divideToFourth() {
+		if(this.getOrientation() == VERTICAL_SPLIT) {
+			this.setDividerLocation(Root.getWidth() / 2);	
+		} else {
+			this.setDividerLocation(Root.getHeight() / 2);
+		}
+	}
+	
+	// Getters & Setters ________________________________________________________________________________
 	public RoverBaseWindow getRoot() {
 		return Root;
 	}
@@ -52,22 +51,27 @@ public class RoverSplitWindow extends JSplitPane {
 	public void setRoot(RoverBaseWindow root) {
 		Root = root;
 	}
+	
 
-	public RoverImageDisplay getLeftView() {
-		return LeftView;
-	}
-
-	public void setLeftView(RoverImageDisplay leftView) {
-		LeftView = leftView;
-	}
-
-	public RoverVideoDisplay getRightView() {
-		return RightView;
-	}
-
-	public void setRightView(RoverVideoDisplay rightView) {
-		RightView = rightView;
+	public RoverTypeA getComponentA() {
+		return ComponentA;
 	}
 	
+
+	public void setComponentA(RoverTypeA componentA) {
+		ComponentA = componentA;
+		this.setTopComponent((Component) ComponentA);
+	}
+	
+
+	public RoverTypeB getComponentB() {
+		return ComponentB;
+	}
+	
+
+	public void setComponentB(RoverTypeB componentB) {
+		ComponentB = componentB;
+		this.setBottomComponent((Component) ComponentB);
+	}
 	
 }

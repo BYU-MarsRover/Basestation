@@ -57,6 +57,24 @@ public class RoverGUIListener {
 		System.out.println("See RoverGUI file for programming conventions");
 	}
 	
+	private void helpTest() {
+		// A place to put temp functions to test if data can change dynamically
+
+		// update data from packets
+		Root.getData().getArmStatus().setDynamixelErrors(0);
+		Root.getData().getArmStatus().setPid1Error(0);
+		Root.getData().getArmStatus().setPid2Error(0);
+		Root.getData().getArmStatus().setPid3Error(0);
+		Root.getData().getGPS().setXCoordinate(9000);
+		Root.getData().getGPS().setYCoordinate(1000);
+		Root.getData().getStatus().setRoverVoltage(777);
+		Root.getData().getStatus().setRoverCurrent(666);
+		Root.getData().updateDisplayedData();
+		
+		// <new test>
+		
+	}
+	
 	// Action Listeners ____________________________________________________________________________________________________
 	private class CommandAction implements ActionListener {
 		
@@ -78,6 +96,10 @@ public class RoverGUIListener {
 				settingsRestoreDefaults();
 			} else if(command.equals("Info")) {
 				helpInfo();
+			} else if(command.equals("Connect")) {
+				System.out.println("Attempting to connect to Rover");
+			} else if(command.equals("Test")) {
+				helpTest();
 			} else {
 				// false alarm
 			}

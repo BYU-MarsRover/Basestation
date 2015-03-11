@@ -39,6 +39,7 @@ public class RoverMenuBar extends JMenuBar {
 		
 		// add items to Help drop menu (add in reverse order of how you want them displayed)
 		addMenuItem(HelpDropMenu, "Info", Root.getMainListener().getCommandListener());
+		addMenuItem(HelpDropMenu, "Test", Root.getMainListener().getCommandListener());
 		
 		
 		this.setVisible(true);

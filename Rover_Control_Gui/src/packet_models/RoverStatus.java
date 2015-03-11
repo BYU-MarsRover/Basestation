@@ -46,6 +46,7 @@ public class RoverStatus {
 		result.append(ubntLinkInteg);
 		result.append("\nDragon Link RSSI: ");
 		result.append(dragonLinkRSSI);
+		result.append("\n");
 		return result.toString();
 	}
 	

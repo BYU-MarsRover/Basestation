@@ -41,6 +41,7 @@ public class RoverArmStatus {
 		result.append(pid2Error);
 		result.append("\nPid3 Error: ");
 		result.append(pid3Error);
+		result.append("\n");
 		return result.toString();
 	}
 	
