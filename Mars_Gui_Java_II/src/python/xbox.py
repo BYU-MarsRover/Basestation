@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Simple program taking input from an xbox controller using pygame library
 # and sending this data over a linux pipe to a java aplication.
-import sys, os, pygame, serial
+import sys, os, pygame, serial, time
 from contextlib import contextmanager
 xbox = 0
 send_file_path = '/home/joseph/xbox_to_java'
@@ -29,6 +29,67 @@ rx = [ 19, 'rx', 0 ]
 ry = [ 20, 'ry', 0 ]
 buttons = [ a, b, x, y, lb, rb, back, start, bxb, ljp, rjp, hl, hr, hu, hd, 
             lt, rt, lx, ly, rx, ry ]
+arm_packet_skeleton = int('0x02CA00000000000000000000', 16)
+turret_left_4 = int('0x0000FC180000000000000000', 16)
+turret_left_3 = int('0x0000FD120000000000000000', 16)
+turret_left_2 = int('0x0000FE0C0000000000000000', 16)
+turret_left_1 = int('0x0000FF060000000000000000', 16)
+turret_right_1 = int('0x000000FA0000000000000000', 16)
+turret_right_2 = int('0x000001F40000000000000000', 16)
+turret_right_3 = int('0x000002EE0000000000000000', 16)
+turret_right_4 = int('0x000003E80000000000000000', 16)
+shoulder_down_4 = int('0x00000000FC18000000000000', 16)
+shoulder_down_3 = int('0x00000000FD12000000000000', 16)
+shoulder_down_2 = int('0x00000000FE0C000000000000', 16)
+shoulder_down_1 = int('0x00000000FF06000000000000', 16)
+shoulder_up_1 = int('0x0000000000FA000000000000', 16)
+shoulder_up_2 = int('0x0000000001F4000000000000', 16)
+shoulder_up_3 = int('0x0000000002EE000000000000', 16)
+shoulder_up_4 = int('0x0000000003E8000000000000', 16)
+elbow_down_4 = int('0x000000000000FC1800000000', 16)
+elbow_down_3 = int('0x000000000000FD1200000000', 16)
+elbow_down_2 = int('0x000000000000FE0C00000000', 16)
+elbow_down_1 = int('0x000000000000FF0600000000', 16)
+elbow_up_1 = int('0x00000000000000FA00000000', 16)
+elbow_up_2 = int('0x00000000000001F400000000', 16)
+elbow_up_3 = int('0x00000000000002EE00000000', 16)
+elbow_up_4 = int('0x00000000000003E800000000', 16)
+wrist_down_4 = int('0x0000000000000000FC180000', 16)
+wrist_down_3 = int('0x0000000000000000FD120000', 16)
+wrist_down_2 = int('0x0000000000000000FE0C0000', 16)
+wrist_down_1 = int('0x0000000000000000FF060000', 16)
+wrist_up_1 = int('0x000000000000000000FA0000', 16)
+wrist_up_2 = int('0x000000000000000001F40000', 16)
+wrist_up_3 = int('0x000000000000000002EE0000', 16)
+wrist_up_4 = int('0x000000000000000003E80000', 16)
+wrist_left_4 = int('0x00000000000000000000FC18', 16)
+wrist_left_3 = int('0x00000000000000000000FD12', 16)
+wrist_left_2 = int('0x00000000000000000000FE0C', 16)
+wrist_left_1 = int('0x00000000000000000000FF06', 16)
+wrist_right_1 = int('0x0000000000000000000000FA', 16)
+wrist_right_2 = int('0x0000000000000000000001F4', 16)
+wrist_right_3 = int('0x0000000000000000000002EE', 16)
+wrist_right_4 = int('0x0000000000000000000003E8', 16)
+main_packet_skeleton = int('0x01C800000000', 16)
+move_forward_4 = int('0x000000FA0000', 16)
+move_forward_3 = int('0x000001F40000', 16)
+move_forward_2 = int('0x000002EE0000', 16)
+move_forward_1 = int('0x000003E80000', 16)
+move_backward_1 = int('0x0000FF060000', 16)
+move_backward_2 = int('0x0000FE0C0000', 16)
+move_backward_3 = int('0x0000FD120000', 16)
+move_backward_4 = int('0x0000FC180000', 16)
+move_left_4 = int('0x00000000FC18', 16)
+move_left_3 = int('0x00000000FD12', 16)
+move_left_2 = int('0x00000000FE0C', 16)
+move_left_1 = int('0x00000000FF06', 16)
+move_right_1 = int('0x0000000000FA', 16)
+move_right_2 = int('0x0000000001F4', 16)
+move_right_3 = int('0x0000000002EE', 16)
+move_right_4 = int('0x0000000003E8', 16)
+arm_prev_packet = 0
+main_prev_packet = 0
+
 
 def main():
     controller_init()
@@ -50,7 +111,7 @@ def controller_init():
 def send_file_init():
     # Initialize a pipe object.
     global send_file_path, send_file
-    os.remove(send_file_path)
+    #os.remove(send_file_path)
     if not os.path.exists(send_file_path):
         os.mkfifo(send_file_path)
     print "Pipe initialization complete!"
@@ -64,7 +125,18 @@ def send(data):
 def control():
     #Main control loop.
     global xbox, send_file_path, send_file, a, b, x, y, lb, rb, back, start
-    global bxb, ljp, rjp, hl, hr, hu, hd, lt, rt, lx, ly, rx, ry 
+    global bxb, ljp, rjp, hl, hr, hu, hd, lt, rt, lx, ly, rx, ry
+    global arm_packet_skeleton, turret_left_4, turret_left_3, turret_left_2
+    global turret_left_1, turret_right_1, turret_right_2, turret_right_3
+    global turret_right_4, shoulder_down_4, shoulder_down_3, shoulder_down_2
+    global shoulder_down_1, shoulder_up_1, shoulder_up_2, shoulder_up_3
+    global shoulder_up_4, elbow_down_4, elbow_down_3, elbow_down_2, elbow_down_1
+    global elbow_up_1, elbow_up_2, elbow_up_3, elbow_up_4
+    global wrist_down_4, wrist_down_3, wrist_down_2, wrist_down_1
+    global wrist_up_1, wrist_up_2, wrist_up_3, wrist_up_4
+    global wrist_left_4, wrist_left_3, wrist_left_2, wrist_left_1
+    global wrist_right_1, wrist_right_2, wrist_right_3, wrist_right_4
+    global arm_prev_packet
     done=False
     while done==False:
         for event in pygame.event.get():
@@ -260,6 +332,148 @@ def control():
                     elif event.value <= 0:
                         if rt[2] != 0:
                             rt[2] = 0
+
+        arm_cur_packet = arm_packet_skeleton
+        # Turret Motion
+        if ((lt[2] == 1) and (lx[2] == -1)):
+            arm_cur_packet = arm_cur_packet + turret_left_4
+        elif ((lt[2] == 1) and (lx[2] == -.75)):
+            arm_cur_packet = arm_cur_packet + turret_left_3
+        elif ((lt[2] == 1) and (lx[2] == -.5)):
+            arm_cur_packet = arm_cur_packet + turret_left_2
+        elif ((lt[2] == 1) and (lx[2] == -.25)):
+            arm_cur_packet = arm_cur_packet + turret_left_1
+        elif ((lt[2] == 1) and (lx[2] == .25)):
+            arm_cur_packet = arm_cur_packet + turret_right_1
+        elif ((lt[2] == 1) and (lx[2] == .5)):
+            arm_cur_packet = arm_cur_packet + turret_right_2
+        elif ((lt[2] == 1) and (lx[2] == .75)):
+            arm_cur_packet = arm_cur_packet + turret_right_3
+        elif ((lt[2] == 1) and (lx[2] == 1)):
+            arm_cur_packet = arm_cur_packet + turret_right_4
+        
+        # Shoulder Motion
+        if ((lt[2] == 1) and (lx[2] == -1)):
+            arm_cur_packet = arm_cur_packet + shoulder_down_4
+        elif ((lt[2] == 1) and (ly[2] == -.75)):
+            arm_cur_packet = arm_cur_packet + shoulder_down_3
+        elif ((lt[2] == 1) and (ly[2] == -.5)):
+            arm_cur_packet = arm_cur_packet + shoulder_down_2
+        elif ((lt[2] == 1) and (ly[2] == -.25)):
+            arm_cur_packet = arm_cur_packet + shoulder_down_1
+        elif ((lt[2] == 1) and (ly[2] == .25)):
+            arm_cur_packet = arm_cur_packet + shoulder_up_1
+        elif ((lt[2] == 1) and (ly[2] == .5)):
+            arm_cur_packet = arm_cur_packet + shoulder_up_2
+        elif ((lt[2] == 1) and (ly[2] == .75)):
+            arm_cur_packet = arm_cur_packet + shoulder_up_3
+        elif ((lt[2] == 1) and (ly[2] == 1)):
+            arm_cur_packet = arm_cur_packet + shoulder_up_4
+       
+        # Elbow Motion
+        if ((lt[2] == 1) and (ry[2] == -1)):
+            arm_cur_packet = arm_cur_packet + elbow_down_4
+        elif ((lt[2] == 1) and (ry[2] == -.75)):
+            arm_cur_packet = arm_cur_packet + elbow_down_3
+        elif ((lt[2] == 1) and (ry[2] == -.5)):
+            arm_cur_packet = arm_cur_packet + elbow_down_2
+        elif ((lt[2] == 1) and (ry[2] == -.25)):
+            arm_cur_packet = arm_cur_packet + elbow_down_1
+        elif ((lt[2] == 1) and (ry[2] == .25)):
+            arm_cur_packet = arm_cur_packet + elbow_up_1
+        elif ((lt[2] == 1) and (ry[2] == .5)):
+            arm_cur_packet = arm_cur_packet + elbow_up_2
+        elif ((lt[2] == 1) and (ry[2] == .75)):
+            arm_cur_packet = arm_cur_packet + elbow_up_3
+        elif ((lt[2] == 1) and (ry[2] == 1)):
+            arm_cur_packet = arm_cur_packet + elbow_up_4
+
+        # Wrist Tilt Motion
+        if ((rt[2] == 1) and (ry[2] == -1)):
+            arm_cur_packet = arm_cur_packet + wrist_down_4
+        elif ((rt[2] == 1) and (ry[2] == -.75)):
+            arm_cur_packet = arm_cur_packet + wrist_down_3
+        elif ((rt[2] == 1) and (ry[2] == -.5)):
+            arm_cur_packet = arm_cur_packet + wrist_down_2
+        elif ((rt[2] == 1) and (ry[2] == -.25)):
+            arm_cur_packet = arm_cur_packet + wrist_down_1
+        elif ((rt[2] == 1) and (ry[2] == .25)):
+            arm_cur_packet = arm_cur_packet + wrist_up_1
+        elif ((rt[2] == 1) and (ry[2] == .5)):
+            arm_cur_packet = arm_cur_packet + wrist_up_2
+        elif ((rt[2] == 1) and (ry[2] == .75)):
+            arm_cur_packet = arm_cur_packet + wrist_up_3
+        elif ((rt[2] == 1) and (ry[2] == 1)):
+            arm_cur_packet = arm_cur_packet + wrist_up_4
+
+        # Wrist Rotate Motion
+        if ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == -1)):
+            arm_cur_packet = arm_cur_packet + wrist_left_4
+        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == -.75)):
+            arm_cur_packet = arm_cur_packet + wrist_left_3
+        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == -.5)):
+            arm_cur_packet = arm_cur_packet + wrist_left_2
+        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == -.25)):
+            arm_cur_packet = arm_cur_packet + wrist_left_1
+        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == .25)):
+            arm_cur_packet = arm_cur_packet + wrist_right_1
+        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == .5)):
+            arm_cur_packet = arm_cur_packet + wrist_right_2
+        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == .75)):
+            arm_cur_packet = arm_cur_packet + wrist_right_3
+        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == 1)):
+            arm_cur_packet = arm_cur_packet + wrist_right_4
+        
+        main_cur_packet = main_packet_skeleton
+        # Forward and Backward Motion
+        if ((rt[2] == 0) and (lt[2] == 0) and (ly[2] == -1)):
+            main_cur_packet = main_cur_packet + move_backward_4
+        elif ((rt[2] == 0) and (lt[2] == 0) and (ly[2] == -.75)):
+            main_cur_packet = main_cur_packet + move_backward_3
+        elif ((rt[2] == 0) and (lt[2] == 0) and (ly[2] == -.5)):
+            main_cur_packet = main_cur_packet + move_backward_2
+        elif ((rt[2] == 0) and (lt[2] == 0) and (ly[2] == -.25)):
+            main_cur_packet = main_cur_packet + move_backward_1
+        elif ((rt[2] == 0) and (lt[2] == 0) and (ly[2] == .25)):
+            main_cur_packet = main_cur_packet + move_forward_1
+        elif ((rt[2] == 0) and (lt[2] == 0) and (ly[2] == .5)):
+            main_cur_packet = main_cur_packet + move_forward_2
+        elif ((rt[2] == 0) and (lt[2] == 0) and (ly[2] == .75)):
+            main_cur_packet = main_cur_packet + move_forward_3
+        elif ((rt[2] == 0) and (lt[2] == 0) and (ly[2] == 1)):
+            main_cur_packet = main_cur_packet + move_forward_4
+        
+        # Left and Right Motion
+        if ((rt[2] == 0) and (lt[2] == 0) and (lx[2] == -1)):
+            main_cur_packet = main_cur_packet + move_left_4
+        elif ((rt[2] == 0) and (lt[2] == 0) and (lx[2] == -.75)):
+            main_cur_packet = main_cur_packet + move_left_3
+        elif ((rt[2] == 0) and (lt[2] == 0) and (lx[2] == -.5)):
+            main_cur_packet = main_cur_packet + move_left_2
+        elif ((rt[2] == 0) and (lt[2] == 0) and (lx[2] == -.25)):
+            main_cur_packet = main_cur_packet + move_left_1
+        elif ((rt[2] == 0) and (lt[2] == 0) and (lx[2] == .25)):
+            main_cur_packet = main_cur_packet + move_right_1
+        elif ((rt[2] == 0) and (lt[2] == 0) and (lx[2] == .5)):
+            main_cur_packet = main_cur_packet + move_right_2
+        elif ((rt[2] == 0) and (lt[2] == 0) and (lx[2] == .75)):
+            main_cur_packet = main_cur_packet + move_right_3
+        elif ((rt[2] == 0) and (lt[2] == 0) and (lx[2] == 1)):
+            main_cur_packet = main_cur_packet + move_right_4
+
+        print "Arm packet:"
+        print arm_cur_packet
+        print hex(arm_cur_packet)
+        print "Main packet:"
+        print main_cur_packet
+        print hex(main_cur_packet)
+        # Update and send packet.
+        #if (arm_cur_packet != arm_prev_packet):
+        #    arm_prev_packet = arm_cur_packet;
+        #send(arm_cur_packet)
+        send(main_cur_packet)
+        
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
