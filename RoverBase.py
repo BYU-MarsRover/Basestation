@@ -9,19 +9,19 @@ from array import *
 # UDP_IP = "192.168.7.2"
 # UDP_IP = '127.0.0.255' # Broadcast Loopback
 # UDP_IP = '255.255.255.255' # Broadcast Sun Adapter
-# UDP_IP = '192.168.0.255' # Broadcast Local Network?
+UDP_IP = '192.168.1.255' # Broadcast Local Network?
 # UDP_IP = '71.195.237.116' # Broadcast
 # UDP_IP = '192.168.10.131' # Broadcast
 # UDP_IP = '192.168.10.121' # Broadcast
 # UDP_IP = '192.168.1.149' # Broadcast
 # UDP_IP = '192.168.1.112' # Broadcast
-UDP_IP = '192.168.1.3' # Broadcast
+# UDP_IP = '192.168.1.3' # Broadcast
 # UDP_PORT = 80
 UDP_PORT = 27015
 MESSAGE = "Rover Test Frame"
 
 
-FPS = 5
+FPS = 20
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # Broadcast
@@ -202,7 +202,9 @@ while done==False:
 	#payload = struct.pack('B'*len(roverLinkFrame),*roverLinkFrame) # Gross way
 	#print payload
 	#roverLinkFrame = [0,1,2,3,4,5,6,7,8,9,8,7,6,5,4,3,2,1,0,9,8,7,6,5,4,3,2,1,0,9,8,7,6,5,4,3,2,1,0]
-	roverLinkFrame = [blinkToggle,mainSeqCount&0xFF]
+	#roverLinkFrame = [blinkToggle,mainSeqCount&0xFF]
+	#roverLinkFrame = [(drive[0]>>8)&0xFF,drive[0]&0xFF,(drive[1]>>8)&0xFF,drive[1]&0xFF]
+	roverLinkFrame = [(gimbal[0]>>8)&0xFF,gimbal[0]&0xFF,(gimbal[1]>>8)&0xFF,gimbal[1]&0xFF]
 	# roverLinkFrame = [0,0,0,0,0,0,0,0,0,0,0]
 	# roverLinkFrame = [1,1,1,1,1,1,1,1]
 	
