@@ -7,6 +7,7 @@
 package mars;
 
 import java.net.*;
+import java.util.*;
 
 public class Server{
     
@@ -26,7 +27,7 @@ public class Server{
             System.out.println(e);
         }
     }
-
+    
     public void run(){
         try{
             System.out.println("Mars Rover Server listening on port " + port);
@@ -38,9 +39,14 @@ public class Server{
                 socket.receive(packet) ;
 
                 // Print the packet.
+                Formatter fm = new Formatter();
+                for (byte b : packet.getData()){
+                    fm.format("%01x ", b);
+                }
+                String hexxer = new String(packet.getData()); //fm.toString();
                 System.out.println(packet.getAddress() + " " + 
                                    packet.getPort() + ": " + 
-                                   new String(packet.getData()));
+                                   hexxer);
 
                 // Return the packet to the sender
                 socket.send(packet) ;
@@ -51,4 +57,5 @@ public class Server{
             System.out.println(e) ;
         }
     }
+
 }
