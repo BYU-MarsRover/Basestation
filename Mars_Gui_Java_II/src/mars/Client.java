@@ -29,7 +29,7 @@ public class Client{
             socket = new DatagramSocket() ;
 
             // Create input Scanner.
-            input = new Scanner(new File("/home/joseph/xbox_to_java"));
+            input = new Scanner(new File("/tmp/xbox_to_java"));
         }
         catch (Exception e){
             System.out.println(e);
@@ -41,7 +41,7 @@ public class Client{
             while(true){
                 // Construct the datagram packet
                 String tempData = "";
-                input = new Scanner(new File("/home/joseph/xbox_to_java"));
+                input = new Scanner(new File("/tmp/xbox_to_java"));
                 while (tempData.equals("")){
                     if (input.hasNextLine()){
                         tempData = input.nextLine();

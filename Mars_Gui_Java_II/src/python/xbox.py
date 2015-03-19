@@ -4,7 +4,7 @@
 import sys, os, pygame, serial, time
 from contextlib import contextmanager
 xbox = 0
-send_file_path = '/home/joseph/xbox_to_java'
+send_file_path = '/tmp/xbox_to_java'
 send_file = 0
 a = [ 0, 'a', 0 ]
 b = [ 1, 'b', 0 ]
@@ -470,10 +470,15 @@ def control():
         # Update and send packet.
         #if (arm_cur_packet != arm_prev_packet):
         #    arm_prev_packet = arm_cur_packet;
-        #send(arm_cur_packet)
+        #send("Arm")
+        #time.sleep(.2)
+        send(arm_cur_packet)
+        time.sleep(.2)
+        #send("Body")
+        #time.sleep(.2)
         send(main_cur_packet)
         
-        time.sleep(1)
+        time.sleep(.2)
 
 if __name__ == "__main__":
     main()

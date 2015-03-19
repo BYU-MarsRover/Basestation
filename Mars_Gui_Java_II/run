@@ -1,0 +1,45 @@
+#!/bin/bash
+# This script will run a full udp broadcast of the controller data
+# from the xbox controller.
+if [ -z "$1" ]
+then
+    hostname="localhost"
+else
+    hostname=$1
+fi
+if [ -z "$2" ]
+then
+    port=27015
+else
+    port=$2
+fi
+if [ ! -f "bin/mars/Mars.class" ]
+then
+    echo "Compiling..."
+    ./maker
+fi
+trap ctrl_c INT
+cd bin
+java mars.Mars -C $hostname $port &
+client=$!
+echo "Mars Rover Client sending packets to: $hostname port $port."
+sleep .25
+java mars.Mars -S localhost $port &
+server=$!
+sleep .25
+../src/python/xbox.py > /dev/null &
+xbox=$!
+echo "Mars Rover xbox controller started."
+echo "Mars Rover listening to and displaying UDP packets."
+sleep .25
+function ctrl_c() {
+    echo ""
+    echo "Shutting down..."
+    kill -9 $client
+    kill -9 $server
+    kill -9 $xbox
+    exit
+}
+while true; do
+    sleep 100000000000000000
+done
