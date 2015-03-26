@@ -476,12 +476,12 @@ def control():
         #send("Arm")
         #time.sleep(.2)
         send(arm_cur_packet)
-        time.sleep(1)
+        time.sleep(.02)
         #send("Body")
         #time.sleep(.2)
         #send(main_cur_packet)
         
-        time.sleep(.2)
+        time.sleep(.02)
 
 if __name__ == "__main__":
     main()
