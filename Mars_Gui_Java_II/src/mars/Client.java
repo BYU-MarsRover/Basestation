@@ -9,6 +9,7 @@ package mars;
 import java.net.*;
 import java.util.*;
 import java.io.*;
+import java.math.*;
 
 public class Client{
 
@@ -48,21 +49,27 @@ public class Client{
                         input.close();
                     }
                 }
-                //System.out.println("Sending: " + tempData);
-                byte [] data = tempData.getBytes() ;
-                packet = new DatagramPacket(data,data.length,host,port);
+
+                BigInteger data = new BigInteger(tempData);
+                byte [] data2 = data.toByteArray();
+                //System.out.println(data2.length);
+                for (int i = 0; i < data2.length; i++) {
+                    System.out.println(String.format("%X", data2[i]));
+                }
+
+                packet = new DatagramPacket(data2,data2.length,host,port);
 
                 // Send it
                 socket.send(packet);
 
                 // Set a receive timeout, 2000 milliseconds
-                socket.setSoTimeout(2000);
+                //socket.setSoTimeout(2000);
 
                 // Prepare the packet for receive
-                packet.setData(new byte[PACKETSIZE]);
+                //packet.setData(new byte[PACKETSIZE]);
 
                 // Wait for a response from the server
-                socket.receive(packet);
+                //socket.receive(packet);
 
                 // Print the response
                 //System.out.println("Received: " + new String(packet.getData()));

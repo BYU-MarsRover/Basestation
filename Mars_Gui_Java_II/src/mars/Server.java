@@ -40,9 +40,9 @@ public class Server{
 
                 // Print the packet.
                 Formatter fm = new Formatter();
-                for (byte b : packet.getData()){
-                    fm.format("%01x ", b);
-                }
+                /*for (byte b : packet.getData()){
+                    System.out.println(String.format("%X", b));
+                }*/
                 String hexxer = new String(packet.getData()); //fm.toString();
                 System.out.println(packet.getAddress() + " " + 
                                    packet.getPort() + ": " + 

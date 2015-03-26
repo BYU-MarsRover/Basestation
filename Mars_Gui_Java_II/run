@@ -27,7 +27,7 @@ sleep .25
 java mars.Mars -S localhost $port &
 server=$!
 sleep .25
-../src/python/xbox.py > /dev/null &
+../src/python/xbox.py &#> /dev/null &
 xbox=$!
 echo "Mars Rover xbox controller started."
 echo "Mars Rover listening to and displaying UDP packets."

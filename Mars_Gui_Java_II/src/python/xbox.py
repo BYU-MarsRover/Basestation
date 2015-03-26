@@ -89,7 +89,9 @@ move_right_3 = int('0x0000000002EE', 16)
 move_right_4 = int('0x0000000003E8', 16)
 arm_prev_packet = 0
 main_prev_packet = 0
-
+arm_toggle = 0
+wrist_toggle = 0
+drive_toggle = 1
 
 def main():
     controller_init()
@@ -136,7 +138,7 @@ def control():
     global wrist_up_1, wrist_up_2, wrist_up_3, wrist_up_4
     global wrist_left_4, wrist_left_3, wrist_left_2, wrist_left_1
     global wrist_right_1, wrist_right_2, wrist_right_3, wrist_right_4
-    global arm_prev_packet
+    global arm_prev_packet, arm_toggle, wrist_toggle, drive_toggle
     done=False
     while done==False:
         for event in pygame.event.get():
@@ -144,48 +146,51 @@ def control():
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 0:
                     a[2] = 1
-                    print "a pressed"
-                    send('a')
+                    #print "a pressed"
                 elif event.button == 1:
                     b[2] = 1
-                    print "b pressed"
-                    send('b')
+                    #print "b pressed"
                 elif event.button == 2:
                     x[2] = 1
-                    print "x pressed"
-                    send('x')
+                    #print "x pressed"
                 elif event.button == 3:
                     y[2] = 1
-                    print "y pressed"
-                    send('y')
+                    #print "y pressed"
                 elif event.button == 4:
                     lb[2] = 1
-                    print "left bumper pressed"
-                    send('left bumper')
+                    #print "left bumper pressed"
                 elif event.button == 5:
                     rb[2] = 1
-                    print "right bumper pressed"
-                    send('right bumper')
+                    #print "right bumper pressed"
                 elif event.button == 6:
                     back[2] = 1
-                    print "back pressed"
-                    send('back')
+                    #print "back pressed"
+                    wrist_toggle = 0
+                    if (arm_toggle == 0):
+                        arm_toggle = 1
+                        drive_toggle = 0
+                    elif (arm_toggle == 1):
+                        arm_toggle = 0
+                        drive_toggle = 1
                 elif event.button == 7:
                     start[2] = 1
-                    print "start pressed"
-                    send('start')
+                    #print "start pressed"
+                    arm_toggle = 0
+                    if (wrist_toggle == 0):
+                        wrist_toggle = 1
+                        drive_toggle = 0
+                    elif (wrist_toggle == 1):
+                        wrist_toggle = 0
+                        drive_toggle = 1
                 elif event.button == 8:
                     bxb[2] = 1
-                    print "big x button pressed"
-                    send('big x button')
+                    #print "big x button pressed"
                 elif event.button == 9:
                     ljp[2] = 1
-                    print "left joystick push button pressed"
-                    send('left joystick push button')
+                    #print "left joystick push button pressed"
                 elif event.button == 10:
                     rjp[2] = 1
-                    print "right joystick push button pressed"
-                    send('right joystick push button')
+                    #print "right joystick push button pressed"
             # Button release handling.
             if event.type == pygame.JOYBUTTONUP:
                 if event.button == 0:
@@ -214,22 +219,22 @@ def control():
             if event.type == pygame.JOYHATMOTION:
                 if event.value[0] == -1:
                     hl[2] = 1
-                    print "hat left pressed"
+                    #print "hat left pressed"
                 elif event.value[0] == 0:
                     hl[2] = 0
                     hr[2] = 0
                 elif event.value[0] == 1:
                     hr[2] = 1
-                    print "hat right pressed"
+                    #print "hat right pressed"
                 if event.value[1] == 1:
                     hu[2] = 1
-                    print "hat up pressed"
+                    #print "hat up pressed"
                 elif event.value[1] == 0:
                     hu[2] = 0
                     hd[2] = 0
                 elif event.value[1] == -1:
                     hd[2] = 1
-                    print "hat down pressed"
+                    #print "hat down pressed"
             # Joystick event handling.
             if event.type == pygame.JOYAXISMOTION:
                 if event.axis == 0:
@@ -251,8 +256,7 @@ def control():
                         lx[2] = 0.75
                     elif event.value > 0.86:
                         lx[2] = 1
-                    if lx[2] != 0:
-                        print "left joystick x axis value: " + str(lx[2])
+                        #print "left joystick x axis value: " + str(lx[2])
                 if event.axis == 1:
                     if event.value < -0.85:
                         ly[2] = -1
@@ -272,13 +276,13 @@ def control():
                         ly[2] = 0.75
                     elif event.value > 0.86:
                         ly[2] = 1
-                    if ly[2] != 0:
-                        print "left joystick y axis value: " + str(ly[2])
+                        #print "left joystick y axis value: " + str(ly[2])
                 if event.axis == 2:
                     if event.value > 0:
                         if lt[2] != 1:
                             lt[2] = 1
-                            print "left trigger pressed"
+                            arm_toggle = 1;
+                            #print "left trigger pressed"
                     elif event.value <= 0:
                         if lt[2] != 0:
                             lt[2] = 0
@@ -301,8 +305,7 @@ def control():
                         rx[2] = 0.75
                     elif event.value > 0.86:
                         rx[2] = 1
-                    if rx[2] != 0:
-                        print "right joystick x axis value: " + str(rx[2])
+                        #print "right joystick x axis value: " + str(rx[2])
                 if event.axis == 4:
                     if event.value < -0.85:
                         ry[2] = -1
@@ -322,106 +325,105 @@ def control():
                         ry[2] = 0.75
                     elif event.value > 0.86:
                         ry[2] = 1
-                    if ry[2] != 0:
-                        print "right joystick y axis value: " + str(ry[2])
+                        #print "right joystick y axis value: " + str(ry[2])
                 if event.axis == 5:
                     if event.value > 0:
                         if rt[2] != 1:
                             rt[2] = 1
-                            print "right trigger pressed"
+                            #print "right trigger pressed"
                     elif event.value <= 0:
                         if rt[2] != 0:
                             rt[2] = 0
 
         arm_cur_packet = arm_packet_skeleton
         # Turret Motion
-        if ((lt[2] == 1) and (lx[2] == -1)):
+        if (((lt[2] == 1) or (arm_toggle == 1)) and (lx[2] == -1)):
             arm_cur_packet = arm_cur_packet + turret_left_4
-        elif ((lt[2] == 1) and (lx[2] == -.75)):
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (lx[2] == -.75)):
             arm_cur_packet = arm_cur_packet + turret_left_3
-        elif ((lt[2] == 1) and (lx[2] == -.5)):
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (lx[2] == -.5)):
             arm_cur_packet = arm_cur_packet + turret_left_2
-        elif ((lt[2] == 1) and (lx[2] == -.25)):
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (lx[2] == -.25)):
             arm_cur_packet = arm_cur_packet + turret_left_1
-        elif ((lt[2] == 1) and (lx[2] == .25)):
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (lx[2] == .25)):
             arm_cur_packet = arm_cur_packet + turret_right_1
-        elif ((lt[2] == 1) and (lx[2] == .5)):
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (lx[2] == .5)):
             arm_cur_packet = arm_cur_packet + turret_right_2
-        elif ((lt[2] == 1) and (lx[2] == .75)):
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (lx[2] == .75)):
             arm_cur_packet = arm_cur_packet + turret_right_3
-        elif ((lt[2] == 1) and (lx[2] == 1)):
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (lx[2] == 1)):
             arm_cur_packet = arm_cur_packet + turret_right_4
         
         # Shoulder Motion
-        if ((lt[2] == 1) and (lx[2] == -1)):
-            arm_cur_packet = arm_cur_packet + shoulder_down_4
-        elif ((lt[2] == 1) and (ly[2] == -.75)):
-            arm_cur_packet = arm_cur_packet + shoulder_down_3
-        elif ((lt[2] == 1) and (ly[2] == -.5)):
-            arm_cur_packet = arm_cur_packet + shoulder_down_2
-        elif ((lt[2] == 1) and (ly[2] == -.25)):
-            arm_cur_packet = arm_cur_packet + shoulder_down_1
-        elif ((lt[2] == 1) and (ly[2] == .25)):
-            arm_cur_packet = arm_cur_packet + shoulder_up_1
-        elif ((lt[2] == 1) and (ly[2] == .5)):
-            arm_cur_packet = arm_cur_packet + shoulder_up_2
-        elif ((lt[2] == 1) and (ly[2] == .75)):
-            arm_cur_packet = arm_cur_packet + shoulder_up_3
-        elif ((lt[2] == 1) and (ly[2] == 1)):
+        if (((lt[2] == 1) or (arm_toggle == 1)) and (ly[2] == -1)):
             arm_cur_packet = arm_cur_packet + shoulder_up_4
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ly[2] == -.75)):
+            arm_cur_packet = arm_cur_packet + shoulder_up_3
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ly[2] == -.5)):
+            arm_cur_packet = arm_cur_packet + shoulder_up_2
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ly[2] == -.25)):
+            arm_cur_packet = arm_cur_packet + shoulder_up_1
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ly[2] == .25)):
+            arm_cur_packet = arm_cur_packet + shoulder_down_1
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ly[2] == .5)):
+            arm_cur_packet = arm_cur_packet + shoulder_down_2
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ly[2] == .75)):
+            arm_cur_packet = arm_cur_packet + shoulder_down_3
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ly[2] == 1)):
+            arm_cur_packet = arm_cur_packet + shoulder_down_4
        
         # Elbow Motion
-        if ((lt[2] == 1) and (ry[2] == -1)):
-            arm_cur_packet = arm_cur_packet + elbow_down_4
-        elif ((lt[2] == 1) and (ry[2] == -.75)):
-            arm_cur_packet = arm_cur_packet + elbow_down_3
-        elif ((lt[2] == 1) and (ry[2] == -.5)):
-            arm_cur_packet = arm_cur_packet + elbow_down_2
-        elif ((lt[2] == 1) and (ry[2] == -.25)):
-            arm_cur_packet = arm_cur_packet + elbow_down_1
-        elif ((lt[2] == 1) and (ry[2] == .25)):
-            arm_cur_packet = arm_cur_packet + elbow_up_1
-        elif ((lt[2] == 1) and (ry[2] == .5)):
-            arm_cur_packet = arm_cur_packet + elbow_up_2
-        elif ((lt[2] == 1) and (ry[2] == .75)):
-            arm_cur_packet = arm_cur_packet + elbow_up_3
-        elif ((lt[2] == 1) and (ry[2] == 1)):
+        if (((lt[2] == 1) or (arm_toggle == 1)) and (ry[2] == -1)):
             arm_cur_packet = arm_cur_packet + elbow_up_4
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ry[2] == -.75)):
+            arm_cur_packet = arm_cur_packet + elbow_up_3
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ry[2] == -.5)):
+            arm_cur_packet = arm_cur_packet + elbow_up_2
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ry[2] == -.25)):
+            arm_cur_packet = arm_cur_packet + elbow_up_1
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ry[2] == .25)):
+            arm_cur_packet = arm_cur_packet + elbow_down_1
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ry[2] == .5)):
+            arm_cur_packet = arm_cur_packet + elbow_down_2
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ry[2] == .75)):
+            arm_cur_packet = arm_cur_packet + elbow_down_3
+        elif (((lt[2] == 1) or (arm_toggle == 1)) and (ry[2] == 1)):
+            arm_cur_packet = arm_cur_packet + elbow_down_4
 
         # Wrist Tilt Motion
-        if ((rt[2] == 1) and (ry[2] == -1)):
-            arm_cur_packet = arm_cur_packet + wrist_down_4
-        elif ((rt[2] == 1) and (ry[2] == -.75)):
-            arm_cur_packet = arm_cur_packet + wrist_down_3
-        elif ((rt[2] == 1) and (ry[2] == -.5)):
-            arm_cur_packet = arm_cur_packet + wrist_down_2
-        elif ((rt[2] == 1) and (ry[2] == -.25)):
-            arm_cur_packet = arm_cur_packet + wrist_down_1
-        elif ((rt[2] == 1) and (ry[2] == .25)):
-            arm_cur_packet = arm_cur_packet + wrist_up_1
-        elif ((rt[2] == 1) and (ry[2] == .5)):
-            arm_cur_packet = arm_cur_packet + wrist_up_2
-        elif ((rt[2] == 1) and (ry[2] == .75)):
-            arm_cur_packet = arm_cur_packet + wrist_up_3
-        elif ((rt[2] == 1) and (ry[2] == 1)):
+        if (((rt[2] == 1) or (wrist_toggle == 1)) and (ry[2] == -1)):
             arm_cur_packet = arm_cur_packet + wrist_up_4
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (ry[2] == -.75)):
+            arm_cur_packet = arm_cur_packet + wrist_up_3
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (ry[2] == -.5)):
+            arm_cur_packet = arm_cur_packet + wrist_up_2
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (ry[2] == -.25)):
+            arm_cur_packet = arm_cur_packet + wrist_up_1
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (ry[2] == .25)):
+            arm_cur_packet = arm_cur_packet + wrist_down_1
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (ry[2] == .5)):
+            arm_cur_packet = arm_cur_packet + wrist_down_2
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (ry[2] == .75)):
+            arm_cur_packet = arm_cur_packet + wrist_down_3
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (ry[2] == 1)):
+            arm_cur_packet = arm_cur_packet + wrist_down_4
 
         # Wrist Rotate Motion
-        if ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == -1)):
+        if (((rt[2] == 1) or (wrist_toggle == 1)) and (lt[2] == 0) and (rx[2] == -1)):
             arm_cur_packet = arm_cur_packet + wrist_left_4
-        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == -.75)):
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (lt[2] == 0) and (rx[2] == -.75)):
             arm_cur_packet = arm_cur_packet + wrist_left_3
-        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == -.5)):
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (lt[2] == 0) and (rx[2] == -.5)):
             arm_cur_packet = arm_cur_packet + wrist_left_2
-        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == -.25)):
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (lt[2] == 0) and (rx[2] == -.25)):
             arm_cur_packet = arm_cur_packet + wrist_left_1
-        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == .25)):
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (lt[2] == 0) and (rx[2] == .25)):
             arm_cur_packet = arm_cur_packet + wrist_right_1
-        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == .5)):
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (lt[2] == 0) and (rx[2] == .5)):
             arm_cur_packet = arm_cur_packet + wrist_right_2
-        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == .75)):
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (lt[2] == 0) and (rx[2] == .75)):
             arm_cur_packet = arm_cur_packet + wrist_right_3
-        elif ((rt[2] == 1) and (lt[2] == 0) and (rx[2] == 1)):
+        elif (((rt[2] == 1) or (wrist_toggle == 1)) and (lt[2] == 0) and (rx[2] == 1)):
             arm_cur_packet = arm_cur_packet + wrist_right_4
         
         main_cur_packet = main_packet_skeleton
@@ -461,22 +463,23 @@ def control():
         elif ((rt[2] == 0) and (lt[2] == 0) and (lx[2] == 1)):
             main_cur_packet = main_cur_packet + move_right_4
 
-        print "Arm packet:"
-        print arm_cur_packet
-        print hex(arm_cur_packet)
-        print "Main packet:"
-        print main_cur_packet
-        print hex(main_cur_packet)
+        #print "Arm packet:"
+        #print arm_cur_packet
+        print "Control Status (D-A-W): " + str(drive_toggle) + "-" + str(arm_toggle) + "-" + \
+            str(wrist_toggle) + ". Arm Packet: " + str(hex(arm_cur_packet))
+        #print "Main packet:"
+        #print main_cur_packet
+        #print hex(main_cur_packet)
         # Update and send packet.
         #if (arm_cur_packet != arm_prev_packet):
         #    arm_prev_packet = arm_cur_packet;
         #send("Arm")
         #time.sleep(.2)
         send(arm_cur_packet)
-        time.sleep(.2)
+        time.sleep(1)
         #send("Body")
         #time.sleep(.2)
-        send(main_cur_packet)
+        #send(main_cur_packet)
         
         time.sleep(.2)
 
