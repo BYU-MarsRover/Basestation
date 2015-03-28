@@ -13,17 +13,19 @@ import java.math.*;
 
 public class Client{
 
-    private final static int PACKETSIZE = 100 ;
+    private final static int PACKETSIZE = 12;
     private DatagramSocket socket;
-    private InetAddress host;
+    private InetAddress hostone;
+    private InetAddress hosttwo;
     private DatagramPacket packet;
     private int port;
     private Scanner input;
 
-    public Client(String hostIn, String portIn){
+    public Client(String hostOneIn, String hostTwoIn, String portIn){
         try{
             // Convert the arguments first, to ensure that they are valid
-            host = InetAddress.getByName(hostIn);
+            hostone = InetAddress.getByName(hostOneIn);
+            hosttwo = InetAddress.getByName(hostTwoIn);
             port = Integer.parseInt(portIn);
             
             // Construct the socket
@@ -52,27 +54,20 @@ public class Client{
 
                 BigInteger data = new BigInteger(tempData);
                 byte [] data2 = data.toByteArray();
-                //System.out.println(data2.length);
-                for (int i = 0; i < data2.length; i++) {
-                    System.out.println(String.format("%X", data2[i]));
-                }
 
-                packet = new DatagramPacket(data2,data2.length,host,port);
+                if (data2[1] == -54) {
+                    packet = new DatagramPacket(data2,data2.length,hostone,port);
+                }
+                else if (data2[1] == -56) {
+                    packet = new DatagramPacket(data2,data2.length,hosttwo,port);
+                }
+                else {
+                    System.out.println("No valid packet data found!!!");
+                    System.exit(1);
+                }
 
                 // Send it
                 socket.send(packet);
-
-                // Set a receive timeout, 2000 milliseconds
-                //socket.setSoTimeout(2000);
-
-                // Prepare the packet for receive
-                //packet.setData(new byte[PACKETSIZE]);
-
-                // Wait for a response from the server
-                //socket.receive(packet);
-
-                // Print the response
-                //System.out.println("Received: " + new String(packet.getData()));
             }
         }
         catch( Exception e ){

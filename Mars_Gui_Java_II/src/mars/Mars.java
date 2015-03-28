@@ -22,7 +22,7 @@ public class Mars{
         }
 
         if (args[0].equals("-C")){
-            Client marsClient = new Client(args[1], args[2]);
+            Client marsClient = new Client(args[1], args[2], args[3]);
             marsClient.run();
         }
     }
