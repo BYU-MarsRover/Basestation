@@ -29,7 +29,7 @@ fi
 trap ctrl_c INT
 cd bin
 sleep .25
-../src/python/xbox.py & #> /dev/null &
+../src/python/xbox.py > /dev/null &
 xbox=$!
 sleep .1
 java mars.Mars -C $hostnameone $hostnametwo $port &

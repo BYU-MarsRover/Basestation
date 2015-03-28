@@ -263,10 +263,10 @@ def control():
                     arm_cur_packet  += ((ry[2] << wrist_vert_offset) & wrist_vert_mask)
 
         # Print python code status (controller).
-        #print "Control Status (D-A-W): " + str(drive_toggle) + "-" + \
-        #      str(arm_toggle) + "-" + str(wrist_toggle) + ". Arm Packet: " + \
-        #      str(hex(arm_cur_packet)) + " Main Packet: " + \
-        #      str(hex(main_cur_packet))
+        print "Control Status (D-A-W): " + str(drive_toggle) + "-" + \
+              str(arm_toggle) + "-" + str(wrist_toggle) + ". Arm Packet: " + \
+              str(hex(arm_cur_packet)) + " Main Packet: " + \
+              str(hex(main_cur_packet))
         
         # Update and send packet.
         send(arm_cur_packet)
