@@ -39,16 +39,20 @@ shoulder_mask        = int('0x00000000FFFF000000000000', 16)
 elbow_mask           = int('0x000000000000FFFF00000000', 16)
 wrist_vert_mask      = int('0x0000000000000000FFFF0000', 16)
 wrist_rotate_mask    = int('0x00000000000000000000FFFF', 16)
-main_packet_skeleton = int('0x01C800000000', 16)
-move_forward_mask    = int('0x0000FFFF0000', 16)
-move_lateral_mask    = int('0x00000000FFFF', 16)
+main_packet_skeleton = int('0x01C800000000000000000000', 16)
+move_forward_mask    = int('0x00000000FFFF000000000000', 16)
+move_lateral_mask    = int('0x000000000000FFFF00000000', 16)
+camera_pan_mask    = int('0x0000000000000000FFFF0000', 16)
+camera_tilt_mask    = int('0x00000000000000000000FFFF', 16)
 turret_offset        = 64
 shoulder_offset      = 48
 elbow_offset         = 32
 wrist_vert_offset    = 16
 wrist_rotate_offset  = 0
-move_forward_offset  = 16
-move_lateral_offset  = 0
+move_forward_offset  = 48
+move_lateral_offset  = 32
+camera_pan_offset    = 16
+camera_tilt_offset   = 0
 arm_prev_packet = 0
 main_prev_packet = 0
 arm_toggle = 0
@@ -256,6 +260,10 @@ def control():
                     main_cur_packet += ((lx[2] << move_lateral_offset) & move_lateral_mask)
                 if (ly[2] > 80 or ly[2] < -80):
                     main_cur_packet += ((ly[2] << move_forward_offset) & move_forward_mask)
+                if (rx[2] > 80 or rx[2] < -80):
+                    main_cur_packet += ((rx[2] << camera_pan_offset) & camera_pan_mask)
+                if (ry[2] > 80 or ry[2] < -80):
+                    main_cur_packet += ((ry[2] << camera_tilt_offset) & camera_tilt_mask)
             else:
                 if (rx[2] > 80 or rx[2] < -80):
                     arm_cur_packet  += ((rx[2] << wrist_rotate_offset) & wrist_rotate_mask)
