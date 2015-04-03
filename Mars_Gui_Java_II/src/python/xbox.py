@@ -40,17 +40,19 @@ elbow_mask           = int('0x000000000000FFFF00000000', 16)
 wrist_vert_mask      = int('0x0000000000000000FFFF0000', 16)
 wrist_rotate_mask    = int('0x00000000000000000000FFFF', 16)
 main_packet_skeleton = int('0x01C800000000000000000000', 16)
-move_forward_mask    = int('0x00000000FFFF000000000000', 16)
-move_lateral_mask    = int('0x000000000000FFFF00000000', 16)
-camera_pan_mask    = int('0x0000000000000000FFFF0000', 16)
-camera_tilt_mask    = int('0x00000000000000000000FFFF', 16)
+move_left_mask       = int('0x00000000FFFF000000000000', 16)
+move_right_mask      = int('0x000000000000FFFF00000000', 16)
+camera_pan_right     = int('0x000000000000000003E80000', 16)
+camera_pan_left      = int('0x0000000000000000FC180000', 16)
+camera_tilt_up       = int('0x0000000000000000000003E8', 16)
+camera_tilt_down     = int('0x00000000000000000000FC18', 16)
 turret_offset        = 64
 shoulder_offset      = 48
 elbow_offset         = 32
 wrist_vert_offset    = 16
 wrist_rotate_offset  = 0
-move_forward_offset  = 48
-move_lateral_offset  = 32
+move_left_offset     = 48
+move_right_offset    = 32
 camera_pan_offset    = 16
 camera_tilt_offset   = 0
 arm_prev_packet = 0
@@ -108,6 +110,7 @@ def control():
     while done==False:
         arm_cur_packet = arm_packet_skeleton
         main_cur_packet = main_packet_skeleton
+        # Control variable updates.
         for event in pygame.event.get():
             # Button press handling.
             if event.type == pygame.JOYBUTTONDOWN:
@@ -239,8 +242,9 @@ def control():
                 if event.axis == 3:
                     rx[2] = int(event.value * -1000)
                 if event.axis == 4:
-                    ry[2] = int(event.value * 1000)
-                    
+                    ry[2] = int(event.value * -1000)
+        
+        # Update Packet.
         if (arm_toggle == 1):
             if (wrist_toggle == 0):
                 if (lx[2] > 80 or lx[2] < -80):
@@ -256,19 +260,23 @@ def control():
                     arm_cur_packet  += ((ry[2] << wrist_vert_offset) & wrist_vert_mask)
         else:
             if (wrist_toggle == 0):
-                if (lx[2] > 80 or lx[2] < -80):
-                    main_cur_packet += ((lx[2] << move_lateral_offset) & move_lateral_mask)
                 if (ly[2] > 80 or ly[2] < -80):
-                    main_cur_packet += ((ly[2] << move_forward_offset) & move_forward_mask)
-                if (rx[2] > 80 or rx[2] < -80):
-                    main_cur_packet += ((rx[2] << camera_pan_offset) & camera_pan_mask)
+                    main_cur_packet += ((ly[2] << move_left_offset) & move_left_mask)
                 if (ry[2] > 80 or ry[2] < -80):
-                    main_cur_packet += ((ry[2] << camera_tilt_offset) & camera_tilt_mask)
+                    main_cur_packet += ((ry[2] << move_right_offset) & move_right_mask)
             else:
                 if (rx[2] > 80 or rx[2] < -80):
                     arm_cur_packet  += ((rx[2] << wrist_rotate_offset) & wrist_rotate_mask)
                 if (ry[2] > 80 or ry[2] < -80):
                     arm_cur_packet  += ((ry[2] << wrist_vert_offset) & wrist_vert_mask)
+        if (hu[2] == 1):
+            main_cur_packet += camera_tilt_up
+        elif (hd[2] == 1):
+            main_cur_packet += camera_tilt_down
+        if (hr[2] == 1):
+            main_cur_packet += camera_pan_right
+        elif (hl[2] == 1):
+            main_cur_packet += camera_pan_left
 
         # Print python code status (controller).
         print "Control Status (D-A-W): " + str(drive_toggle) + "-" + \
