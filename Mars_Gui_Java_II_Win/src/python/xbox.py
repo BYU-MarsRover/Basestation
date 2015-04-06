@@ -3,7 +3,7 @@
 # Simple program taking input from an xbox controller using pygame library
 # and sending this data over a linux pipe to a java aplication.
 
-import sys, os, pygame, serial, time
+import sys, os, pygame, time
 from contextlib import contextmanager
 
 # Global Declarations.
