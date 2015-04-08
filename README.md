@@ -27,7 +27,7 @@ This server should receive packets sent from the rover to the base station. If p
 This code is essentially the same as the Windows code, only it is run using a shell script instead of a batch script. It also uses a linux pipe instead of a file to communicate between python and java.
 
 ### Rover_Control_Gui
-** This GUI will show the current status of the rover at all times based on the packets sent by the rover to the base station.**
+** This GUI will show the current status of the rover at all times based on the packets sent by the rover to the** ** base station.**
 
 ### Mars_Gui_Python
 ** This was an initial attempt to build the entire base station in python.**
