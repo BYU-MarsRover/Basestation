@@ -4,7 +4,7 @@ I wrote a batch script that should launch the xbox controller script, the server
 
 If you were wanting to send packets to the actual rover you would run this from the command line:
 
-**./run 192.168.10.3 192.168.10.4 27015**
+**./run 192.168.10.4 192.168.10.3 27015**
 
 I will be dropping off the xbox controller at the lab today, so if anyone wants to get the code and controller and test out my code that's where they can find the controller. We will probably need to invert some of the values being sent either on the base station, or the PSoC to get the full functionality that we want.
 
