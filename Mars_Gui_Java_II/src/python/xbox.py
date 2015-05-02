@@ -63,7 +63,6 @@ main_prev_packet = 0
 arm_toggle = 0
 wrist_toggle = 0
 drive_toggle = 1
-wrist_actuate_toggle = 0
 
 def main():
     controller_init()
@@ -110,7 +109,7 @@ def control():
     global wrist_left_4, wrist_left_3, wrist_left_2, wrist_left_1
     global wrist_right_1, wrist_right_2, wrist_right_3, wrist_right_4
     global arm_prev_packet, arm_toggle, wrist_toggle, drive_toggle
-    global wrist_actuate_on, wrist_actuate_off, wrist_actuate_toggle
+    global wrist_actuate_on, wrist_actuate_off
     done=False
     while done==False:
         arm_cur_packet = arm_packet_skeleton
@@ -121,11 +120,9 @@ def control():
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 0:
                     a[2] = 1
-		    wrist_actuate_toggle = 1
                     #print "a pressed"
                 elif event.button == 1:
                     b[2] = 1
-		    wrist_actuate_toggle = 0
                     #print "b pressed"
                 elif event.button == 2:
                     x[2] = 1
@@ -276,9 +273,9 @@ def control():
                     arm_cur_packet  += ((rx[2] << wrist_rotate_offset) & wrist_rotate_mask)
                 if (ry[2] > 80 or ry[2] < -80):
                     arm_cur_packet  += ((ry[2] << wrist_vert_offset) & wrist_vert_mask)
-        if (wrist_actuate_toggle == 1):
+        if (a[2] == 1):
 	    arm_cur_packet += wrist_actuate_on
-	else:
+	elif (b[2] == 1):
 	    arm_cur_packet += wrist_actuate_off
 	if (hu[2] == 1):
             main_cur_packet += camera_tilt_up
