@@ -68,11 +68,11 @@ public class Client{
 
                 // Send it
                 socket.send(packet);
-				try {
-					Thread.sleep(10);
-				} catch(InterruptedException ex) {
-					Thread.currentThread().interrupt();
-				}
+                try {
+                    Thread.sleep(10);
+                } catch(InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
         catch( Exception e ){

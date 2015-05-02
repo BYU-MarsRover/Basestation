@@ -11,7 +11,7 @@ import java.util.*;
 
 public class Server{
     
-    private final static int ARMPACKETSIZE = 12;
+    private final static int ARMPACKETSIZE = 14;
     private final static int MAINPACKETSIZE = 12;
     private DatagramSocket socket;
     private DatagramPacket packet;
