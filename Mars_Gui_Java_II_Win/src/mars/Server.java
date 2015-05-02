@@ -50,7 +50,7 @@ public class Server{
                     }
                     System.out.println(sb.toString());
                 }
-                if (data[1] == -56) {
+                else if (data[1] == -56) {
                     System.out.println("Main packet:");
                     StringBuilder sb = new StringBuilder();
                     sb.append("0x");
@@ -59,7 +59,10 @@ public class Server{
                     }
                     System.out.println(sb.toString());
                 }
-				
+		else if (data.length > 1){
+                    System.out.println("Random Packet Reveived.");
+                    System.out.println(data);
+		}		
                 // Return the packet to the sender
                 socket.send(packet) ;
             }  
