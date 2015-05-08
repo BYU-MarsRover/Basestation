@@ -291,6 +291,16 @@ def control():
               str(arm_toggle) + "-" + str(wrist_toggle) + ". \nArm Packet: " + \
               str(hex(arm_cur_packet)) + "\nMain Packet: " + \
               str(hex(main_cur_packet))
+
+        
+        send_file = open(send_file_path, 'w')
+        if (drive_toggle == 1):
+            send_file.write('1')
+        elif (arm_toggle == 1):
+            send_file.write('2')
+        elif (wrist_toggle == 1):
+            send_file.write('3')
+        send_file.close()
         
         # Update and send packet.
         main_byte_packet = array('B')
@@ -305,9 +315,9 @@ def control():
 def signal_handler(signal, frame):
     global rover_base_client, rover_arm_client
     print "\n\rClosing down client..."
-    if bound:
-        rover_base_client.m_socket.close()
-        rover_arm_client.m_socket.close()
+    #if bound:
+    #    rover_base_client.m_socket.close()
+    #    rover_arm_client.m_socket.close()
     sys.exit(1)
 
 def get_bytes(size, data):
