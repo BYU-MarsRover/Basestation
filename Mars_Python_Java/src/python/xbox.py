@@ -45,8 +45,8 @@ wrist_rotate_mask    = int('0x00000000000000000000FFFF0000', 16)
 wrist_actuate_on     = int('0x00000000000000000000000003E8', 16)
 wrist_actuate_off    = int('0x000000000000000000000000FC18', 16)
 main_packet_skeleton = int('0x01C800000000000000000000', 16)
-move_left_mask       = int('0x00000000FFFF000000000000', 16)
-move_right_mask      = int('0x000000000000FFFF00000000', 16)
+move_right_mask      = int('0x00000000FFFF000000000000', 16)
+move_left_mask       = int('0x000000000000FFFF00000000', 16)
 camera_pan_right     = int('0x000000000000000003E80000', 16)
 camera_pan_left      = int('0x0000000000000000FC180000', 16)
 camera_tilt_up       = int('0x0000000000000000000003E8', 16)
@@ -57,8 +57,8 @@ elbow_offset         = 48
 wrist_vert_offset    = 32
 wrist_rotate_offset  = 16
 wrist_actuate_offset = 0
-move_left_offset     = 48
-move_right_offset    = 32
+move_right_offset    = 48
+move_left_offset     = 32
 camera_pan_offset    = 16
 camera_tilt_offset   = 0
 arm_prev_packet = 0
@@ -114,7 +114,8 @@ def control():
     global wrist_left_4, wrist_left_3, wrist_left_2, wrist_left_1
     global wrist_right_1, wrist_right_2, wrist_right_3, wrist_right_4
     global arm_prev_packet, arm_toggle, wrist_toggle, drive_toggle
-    global wrist_actuate_on, wrist_actuate_off, rover_base_client, rover_arm_client
+    global wrist_actuate_on, wrist_actuate_off, rover_base_client
+    global rover_arm_client
     done=False
     while done==False:
         arm_cur_packet = arm_packet_skeleton
@@ -254,7 +255,8 @@ def control():
                 if (lx[2] > 110 or lx[2] < -110):
                     arm_cur_packet  += ((lx[2] << turret_offset) & turret_mask)
                 if (ly[2] > 110 or ly[2] < -110):
-                    arm_cur_packet  += ((ly[2] << shoulder_offset) & shoulder_mask)
+                    rev_s = -ly[2]
+                    arm_cur_packet  += ((rev_s << shoulder_offset) & shoulder_mask)
                 if (ry[2] > 110 or ry[2] < -110):
                     arm_cur_packet  += ((ry[2] << elbow_offset) & elbow_mask)
             else:
@@ -265,9 +267,11 @@ def control():
         else:
             if (wrist_toggle == 0):
                 if (ly[2] > 110 or ly[2] < -110):
-                    main_cur_packet += ((ly[2] << move_left_offset) & move_left_mask)
+                    rev_ld = -ly[2]
+                    main_cur_packet += ((rev_ld << move_left_offset) & move_left_mask)
                 if (ry[2] > 110 or ry[2] < -110):
-                    main_cur_packet += ((ry[2] << move_right_offset) & move_right_mask)
+                    rev_rd = -ry[2]
+                    main_cur_packet += ((rev_rd << move_right_offset) & move_right_mask)
             else:
                 if (rx[2] > 110 or rx[2] < -110):
                     arm_cur_packet  += ((rx[2] << wrist_rotate_offset) & wrist_rotate_mask)

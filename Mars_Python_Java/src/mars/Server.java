@@ -67,9 +67,9 @@ public class Server{
 						sb.append(" ");
     				}
 					System.out.println(sb.toString());
-		}		
+		        }		
                 // Return the packet to the sender
-                socket.send(packet) ;
+                // socket.send(packet);
             }  
         }
         catch(Exception e)
