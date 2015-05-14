@@ -59,7 +59,7 @@ public class Server{
                     }
                     System.out.println(sb.toString());
                 }
-		else if (data.length > 1){
+		        else if (data.length > 1){
                     System.out.println("Random Packet Reveived.");
 					StringBuilder sb = new StringBuilder();
 					for (int i = 0; i < data.length; i++){
