@@ -9,27 +9,30 @@ package mars;
 import java.net.*;
 import java.util.*;
 import java.io.*;
+import java.math.*;
 
 public class Client{
 
-    private final static int PACKETSIZE = 100 ;
+    private final static int PACKETSIZE = 12;
     private DatagramSocket socket;
-    private InetAddress host;
+    private InetAddress hostone;
+    private InetAddress hosttwo;
     private DatagramPacket packet;
     private int port;
     private Scanner input;
 
-    public Client(String hostIn, String portIn){
+    public Client(String hostOneIn, String hostTwoIn, String portIn){
         try{
             // Convert the arguments first, to ensure that they are valid
-            host = InetAddress.getByName(hostIn);
+            hostone = InetAddress.getByName(hostOneIn);
+            hosttwo = InetAddress.getByName(hostTwoIn);
             port = Integer.parseInt(portIn);
             
             // Construct the socket
             socket = new DatagramSocket() ;
 
             // Create input Scanner.
-            input = new Scanner(new File("/home/joseph/xbox_to_java"));
+            input = new Scanner(new File("/tmp/xbox_to_java"));
         }
         catch (Exception e){
             System.out.println(e);
@@ -41,31 +44,30 @@ public class Client{
             while(true){
                 // Construct the datagram packet
                 String tempData = "";
-                input = new Scanner(new File("/home/joseph/xbox_to_java"));
+                input = new Scanner(new File("/tmp/xbox_to_java"));
                 while (tempData.equals("")){
                     if (input.hasNextLine()){
                         tempData = input.nextLine();
                         input.close();
                     }
                 }
-                //System.out.println("Sending: " + tempData);
-                byte [] data = tempData.getBytes() ;
-                packet = new DatagramPacket(data,data.length,host,port);
+
+                BigInteger data = new BigInteger(tempData);
+                byte [] data2 = data.toByteArray();
+
+                if (data2[1] == -54) {
+                    packet = new DatagramPacket(data2,data2.length,hostone,port);
+                }
+                else if (data2[1] == -56) {
+                    packet = new DatagramPacket(data2,data2.length,hosttwo,port);
+                }
+                else {
+                    System.out.println("No valid packet data found!!!");
+                    System.exit(1);
+                }
 
                 // Send it
                 socket.send(packet);
-
-                // Set a receive timeout, 2000 milliseconds
-                socket.setSoTimeout(2000);
-
-                // Prepare the packet for receive
-                packet.setData(new byte[PACKETSIZE]);
-
-                // Wait for a response from the server
-                socket.receive(packet);
-
-                // Print the response
-                //System.out.println("Received: " + new String(packet.getData()));
             }
         }
         catch( Exception e ){

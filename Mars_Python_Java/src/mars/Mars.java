@@ -8,13 +8,6 @@ package mars;
 public class Mars{
     
     public static void main(String args[]){
-        // Check arguments for matching usage cases.
-        /*if ((args.length != 3) || (args[0] != "-S")){
-            if (args[0] != "-C"){
-                printUsage();
-                return;
-            }
-        }*/
 
         if (args[0].equals("-S")){
             Server marsServer =  new Server(args[1], args[2]);
