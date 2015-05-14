@@ -9,7 +9,7 @@ from array import *
 # UDP_IP = "192.168.7.2"
 # UDP_IP = '127.0.0.255' # Broadcast Loopback
 # UDP_IP = '255.255.255.255' # Broadcast Sun Adapter
-UDP_IP = '192.168.1.255' # Broadcast Local Network?
+UDP_IP = '192.168.10.255' # Broadcast Local Network?
 # UDP_IP = '71.195.237.116' # Broadcast
 # UDP_IP = '192.168.10.131' # Broadcast
 # UDP_IP = '192.168.10.121' # Broadcast
@@ -152,12 +152,19 @@ while done==False:
 	if(pygame.joystick.get_count()==1):
 		joystick = pygame.joystick.Joystick(0)
 		joystick.init()
-		if(joystick.get_numaxes() >=2 ):
+		if(joystick.get_numaxes() <= 3 ):
 			drive[0] = int(joystick.get_axis(0)*1000)
 			drive[1] = int(joystick.get_axis(1)*-1000)
-		if(joystick.get_numaxes() >=4 ):
+		elif(joystick.get_numaxes() == 4 ):
+			gimbal[0] = int(joystick.get_axis(3)*1000)
+			gimbal[1] = int(joystick.get_axis(2)*-1000)
+			drive[0] = int(joystick.get_axis(0)*1000)
+			drive[1] = int(joystick.get_axis(1)*-1000)
+		else:
 			gimbal[0] = int(joystick.get_axis(4)*1000)
 			gimbal[1] = int(joystick.get_axis(3)*-1000)
+			drive[0] = int(joystick.get_axis(0)*1000)
+			drive[1] = int(joystick.get_axis(1)*-1000)
 	
 	
 	# --- Constrain all values to +/- 1000
@@ -198,13 +205,14 @@ while done==False:
 	DRIVE_LEN   = 5
 	ARM_LEN     = 5
 	
-	# roverLinkFrame = [0x01,0xC8,(mainSeqCount&0xFF),DRIVE_LEN,(gimbal[0]>>8)&0xFF,gimbal[0]&0xFF,(gimbal[1]>>8)&0xFF,gimbal[1]&0xFF]
+	roverLinkFrame = [0x01,0xC8,(mainSeqCount&0xFF),DRIVE_LEN,(gimbal[0]>>8)&0xFF,gimbal[0]&0xFF,(gimbal[1]>>8)&0xFF,gimbal[1]&0xFF,(drive[0]>>8)&0xFF,drive[0]&0xFF,(drive[1]>>8)&0xFF,drive[1]&0xFF]
 	#payload = struct.pack('B'*len(roverLinkFrame),*roverLinkFrame) # Gross way
 	#print payload
 	#roverLinkFrame = [0,1,2,3,4,5,6,7,8,9,8,7,6,5,4,3,2,1,0,9,8,7,6,5,4,3,2,1,0,9,8,7,6,5,4,3,2,1,0]
 	#roverLinkFrame = [blinkToggle,mainSeqCount&0xFF]
 	#roverLinkFrame = [(drive[0]>>8)&0xFF,drive[0]&0xFF,(drive[1]>>8)&0xFF,drive[1]&0xFF]
-	roverLinkFrame = [(gimbal[0]>>8)&0xFF,gimbal[0]&0xFF,(gimbal[1]>>8)&0xFF,gimbal[1]&0xFF]
+	#roverLinkFrame = [(gimbal[0]>>8)&0xFF,gimbal[0]&0xFF,(gimbal[1]>>8)&0xFF,gimbal[1]&0xFF]
+	# roverLinkFrame = [(gimbal[0]>>8)&0xFF,gimbal[0]&0xFF,(gimbal[1]>>8)&0xFF,gimbal[1]&0xFF]
 	# roverLinkFrame = [0,0,0,0,0,0,0,0,0,0,0]
 	# roverLinkFrame = [1,1,1,1,1,1,1,1]
 	
