@@ -76,6 +76,8 @@ rover_base_client = 0
 rover_arm_client = 0
 camera_toggle = 1
 laser_toggle = 0
+camera_debounce = 0
+laser_debounce = 0
 
 def main():
     global rover_base_client, rover_arm_client
@@ -123,7 +125,8 @@ def control():
     global wrist_right_1, wrist_right_2, wrist_right_3, wrist_right_4
     global arm_prev_packet, arm_toggle, wrist_toggle, drive_toggle
     global wrist_actuate_on, wrist_actuate_off, rover_base_client
-    global rover_arm_client, camera_toggle, laser_toggle
+    global rover_arm_client, camera_toggle, laser_toggle, camera_debounce
+    global laser_debounce
     done=False
     while done==False:
         arm_cur_packet = arm_packet_skeleton
@@ -140,9 +143,11 @@ def control():
                     #print "b pressed"
                 elif event.button == 2:
                     x[2] = 1
+                    laser_debounce = 1
                     #print "x pressed"
                 elif event.button == 3:
                     y[2] = 1
+                    camera_debounce = 1
                     #print "y pressed"
                 elif event.button == 4:
                     lb[2] = 1
@@ -228,8 +233,7 @@ def control():
                 if event.axis == 0:
                     lx[2] = int(event.value * 1000)
                 if event.axis == 1:
-                    ly[2] = int(event.value * -1000)
-				
+                    ly[2] = int(event.value * -1000)	
                 if event.axis == 2:
                     # Left trigger
                     if event.value > .5:
@@ -251,7 +255,6 @@ def control():
                         drive_toggle = 1
                         arm_toggle = 0
                         wrist_toggle = 0
-						
                 if event.axis == 3:
                     ry[2] = int(event.value * -1000)
                 if event.axis == 4:
@@ -271,7 +274,7 @@ def control():
                 if (rx[2] > 110 or rx[2] < -110):
                     arm_cur_packet  += ((rx[2] << wrist_rotate_offset) & wrist_rotate_mask)
                 if (ry[2] > 110 or ry[2] < -110):
-                    arm_cur_packet  += ((ry[2] << wrist_vert_offset) & wrist_vert_mask)
+                    arm_cur_packet  += ((ly[2] << wrist_vert_offset) & wrist_vert_mask)
         else:
             if (wrist_toggle == 0):
                 if (ly[2] > 110 or ly[2] < -110):
@@ -284,7 +287,7 @@ def control():
                 if (rx[2] > 110 or rx[2] < -110):
                     arm_cur_packet  += ((rx[2] << wrist_rotate_offset) & wrist_rotate_mask)
                 if (ry[2] > 110 or ry[2] < -110):
-                    arm_cur_packet  += ((ry[2] << wrist_vert_offset) & wrist_vert_mask)
+                    arm_cur_packet  += ((ly[2] << wrist_vert_offset) & wrist_vert_mask)
         
         # Update actuator.
 	    if (a[2] == 1):
@@ -303,7 +306,8 @@ def control():
             main_cur_packet += camera_pan_left
 
         # Update laser toggle.
-        if (x[2] == 1):
+        if (x[2] == 0 and laser_debounce == 1):
+            laser_debounce = 0
             if (laser_toggle == 0):
                 laser_toggle = 1
             else:
@@ -314,7 +318,8 @@ def control():
             arm_cur_packet += laser_one
 
         # Update camera toggle.
-        if (y[2] == 1):
+        if (y[2] == 0 and camera_debounce == 1):
+            camera_debounce = 0
             if (camera_toggle == 1):
                 camera_toggle = 2
             elif (camera_toggle == 2):
